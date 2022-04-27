@@ -11,23 +11,23 @@ class Environment(object):
     '''Interface to the MarioAI simulator.
 
     Attributes:
-      level_difficulty (int): the level difficulty. There is no limit, but it 
+      level_difficulty (int): the level difficulty. There is no limit, but it
         is suggested to be kept between 0 and 30. Defaults to 0.
-      level_type (int): the level type, use 0 for overground; 1 for 
+      level_type (int): the level type, use 0 for overground; 1 for
         underground; 2 for castle; and 3 for random. Defaults to 0.
       creatures_enabled (bool): whether if creates are enabled or not, defaults
         to True.
       init_mario_mode (int): initial Mario mode; Use 0 for small; 1 for large;
         and 2 for large with fire. Defaults to 2.
       level_seed (int): the level randomization seed, defaults to 1.
-      time_limit (int): the limit Marioseconds (which is faster than the 
+      time_limit (int): the limit Marioseconds (which is faster than the
         actual seconds), defaults to 100.
       fast_tcp (bool): defaults to False.
       visualization (bool): whether the level visualization (on server) is on
         or off.
       custom_args (str): a string with custom arguments to the server.
       fitness_values (int): defaults to 5
-      connected (bool): whether the environment is connected to the simulator 
+      connected (bool): whether the environment is connected to the simulator
         or not.
     '''
 
@@ -46,7 +46,7 @@ class Environment(object):
         self.level_seed = 1
         self.time_limit = 100
         self.fast_tcp = False
-        
+
         self.visualization = True
         self.custom_args = ""
         self.fitness_values = 5
@@ -76,7 +76,7 @@ class Environment(object):
             return extractObservation(data)
 
         else:
-            logging.warning('[ENVIRONMENT] Unexpected received data: %s'%data);
+            logging.warning(f'[ENVIRONMENT] Unexpected received data: {data}')
 
 
     def perform_action(self, action):
@@ -98,9 +98,9 @@ class Environment(object):
         Args:
           action (list): a list of integers.
         '''
-        
+
         actionStr = ""
-        for i in xrange(5):
+        for i in range(5):
             if action[i] == 1:
                 actionStr += '1'
 
@@ -108,11 +108,11 @@ class Environment(object):
                 actionStr += '0'
 
             else:
-                raise "something very dangerous happen...."
+                raise ValueError("something very dangerous happen....")
 
         actionStr += "\r\n"
-        self._tcpclient.sendData(actionStr)
-    
+        self._tcpclient.sendData(str.encode(actionStr))
+
 
     def reset(self):
         '''Resets the simulator and configure it according to the variables set
@@ -136,7 +136,7 @@ class Environment(object):
         if self.fast_tcp:
             argstring += "-fastTCP on"
 
-        self._tcpclient.sendData("reset -maxFPS on "+argstring + self.custom_args+"\r\n")
+        self._tcpclient.sendData(str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n"))
 
 
 
@@ -144,7 +144,7 @@ class Environment(object):
 
 class TCPClient(object):
     '''A simple client for the marioai TCP server.
-    
+
     Attributes:
       name (str): the bot's name.
       host (str): the server address.
@@ -167,7 +167,7 @@ class TCPClient(object):
         self.host = host
         self.port = port
         self.sock = None
-        self.connected = False;
+        self.connected = False
         self.buffer_size = 4096
 
     def __del__(self):
@@ -180,24 +180,24 @@ class TCPClient(object):
 
         h, p = self.host, self.port
 
-        logging.info('[TCPClient] trying to connect to %s:%s'%(h, p))
+        logging.info(f'[TCPClient] trying to connect to {h}:{p}')
         self.sock = socket.socket()
 
         try:
             self.sock.connect((h, p))
-            logging.info('[TCPClient] connection to %s:%s succeeded'%(h, p))
+            logging.info(f'[TCPClient] connection to {h}:{p} succeeded')
 
             data = self.recvData()
-            logging.info('[TCPClient] greetings received: %s'%data)
+            logging.info(f'[TCPClient] greetings received: {data}')
 
-        except socket.error, message:
-            logging.error('[TCPClient] connection error: %s'%message[1])
+        except socket.error as message:
+            logging.error(f'[TCPClient] connection error: {message[1]}')
             sys.exit(1)
 
-        message = 'Client: Dear Server, hello! I am %s\r\n'%self.name
-        self.sendData(message)
+        message = f'Client: Dear Server, hello! I am {self.name}\r\n'
+        self.sendData(str.encode(message))
 
-        self.connected = True;
+        self.connected = True
 
     def disconnect(self):
         '''Disconnects from the server.'''
@@ -216,8 +216,8 @@ class TCPClient(object):
         try:
             return self.sock.recv(self.buffer_size)
 
-        except socket.error, message:
-            logging.error('[TCPClient] error while receiving. Message: %s'%message)
+        except socket.error as message:
+            logging.error(f'[TCPClient] error while receiving. Message: {message}')
             raise socket.error
 
     def sendData(self, data):
@@ -227,10 +227,10 @@ class TCPClient(object):
           data (str): the string to be sent.
         '''
         try:
-            self.sock.send(data)
+          self.sock.send(data)
 
-        except socket.error, message:
-            logging.error('[TCPClient] error while sending. Message: %s'%message)
-            raise socket.error
+        except socket.error as message:
+          logging.error(f'[TCPClient] error while sending. Message: {message}')
+          raise socket.error
 
 

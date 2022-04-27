@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 __all__ = ['extractObservation']
 
@@ -11,7 +11,7 @@ def decode(estate):
     decodes the encoded state estate, which is a string of 61 chars
     """
 #    powsof2 = (1, 2, 4, 8, 16, 32, 64, 128)
-    dstate = numpy.empty(shape = (22, 22), dtype = numpy.int)
+    dstate = np.empty(shape = (22, 22), dtype = np.int)
     for i in range(22):
         for j in range(22):
             dstate[i, j] = 2
@@ -37,17 +37,17 @@ def decode(estate):
             col += 1
             if (totalBitsDecoded == 484):
                 break
-    print "totalBitsDecoded = ", totalBitsDecoded
-    return dstate, check_sum;
+    print(f"totalBitsDecoded: {totalBitsDecoded}")
+    return dstate, check_sum
 
 
-def extractObservation(data):
+def extractObservation(data: bytes):
     """
      parse the array of strings and return array 22 by 22 of doubles
     """
-
+    data = data.decode()
     obsLength = 487
-    levelScene = numpy.empty(shape = (22, 22), dtype = numpy.int)
+    levelScene = np.empty(shape = (22, 22), dtype = np.int)
     enemiesFloats = []
     dummy = 0
     if(data[0] == 'E'):
@@ -56,7 +56,7 @@ def extractObservation(data):
         levelScene, check_sum_got = decode(data[3:34])
         check_sum_recv = int(data[34:])
         if check_sum_got != check_sum_recv:
-            print "Error check_sum! got %d != recv %d" % (check_sum_got, check_sum_recv)
+            print(f"Error check_sum! got {check_sum_got} != recv {check_sum_recv}")
 
         return (mayMarioJump, isMarioOnGround, levelScene)
     data = data.split(' ')
@@ -66,7 +66,7 @@ def extractObservation(data):
         timeLeft = int(data[3])
         marioMode = int(data[4])
         coins = int(data[5])
-        
+
         return status, distance, timeLeft, marioMode, coins
 
     elif(data[0] == 'O'):
@@ -79,12 +79,12 @@ def extractObservation(data):
                 k += 1
         k += 3
         marioFloats = (float(data[k]), float(data[k + 1]))
-        k += 2        
+        k += 2
         while k < len(data):
             enemiesFloats.append(float(data[k]))
             k += 1
-        
+
         return (mayMarioJump, isMarioOnGround, marioFloats, enemiesFloats, levelScene, dummy)
 
     else:
-        raise "Wrong format or corrupted observation..."
+        raise ValueError("Wrong format or corrupted observation...")

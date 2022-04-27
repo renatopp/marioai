@@ -4,7 +4,7 @@ __all__ = ['Experiment']
 
 class Experiment(object):
     '''Episodic Experiment'''
-    
+
     def __init__(self, task, agent):
         self.task = task
         self.agent = agent
@@ -15,7 +15,7 @@ class Experiment(object):
         self.task.perform_action(self.agent.act())
         self.agent.give_rewards(self.task.reward, self.task.cum_reward)
         return self.task.reward
-    
+
     def _episode(self):
         rewards = []
 
@@ -34,7 +34,7 @@ class Experiment(object):
     def doEpisodes(self, n=1):
         rewards = []
 
-        for _ in xrange(n):
+        for _ in range(n):
             rewards.append(self._episode())
 
         return rewards
