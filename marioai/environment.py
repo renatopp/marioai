@@ -99,30 +99,26 @@ class Environment(object):
           action (list): a list of integers.
         '''
 
-        actionStr = ""
+        action_str = ""
         for i in range(5):
             if action[i] == 1:
-                actionStr += '1'
+                action_str += '1'
 
             elif action[i] == 0:
-                actionStr += '0'
+                action_str += '0'
 
             else:
                 raise ValueError("something very dangerous happen....")
 
-        actionStr += "\r\n"
-        self._tcpclient.sendData(str.encode(actionStr))
+        action_str += "\r\n"
+        self._tcpclient.send_data(str.encode(action_str))
 
 
     def reset(self):
         '''Resets the simulator and configure it according to the variables set
         here.'''
 
-        argstring = "-ld %d -lt %d -mm %d -ls %d -tl %d "%(self.level_difficulty,
-                                                           self.level_type,
-                                                           self.init_mario_mode,
-                                                           self.level_seed,
-                                                           self.time_limit)
+        argstring = f"-ld {self.level_difficulty} -lt {self.level_type} -mm {self.init_mario_mode} -ls {self.level_seed} -tl {self.time_limit} "
         if self.creatures_enabled:
             argstring += "-pw off "
         else:
@@ -136,7 +132,7 @@ class Environment(object):
         if self.fast_tcp:
             argstring += "-fastTCP on"
 
-        self._tcpclient.sendData(str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n"))
+        self._tcpclient.send_data(str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n"))
 
 
 
@@ -195,7 +191,7 @@ class TCPClient(object):
             sys.exit(1)
 
         message = f'Client: Dear Server, hello! I am {self.name}\r\n'
-        self.sendData(str.encode(message))
+        self.send_data(str.encode(message))
 
         self.connected = True
 
@@ -220,7 +216,7 @@ class TCPClient(object):
             logging.error(f'[TCPClient] error while receiving. Message: {message}')
             raise socket.error
 
-    def sendData(self, data):
+    def send_data(self, data):
         '''Send data to server.
 
         Args:
