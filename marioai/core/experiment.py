@@ -1,5 +1,8 @@
 import time
-
+import os
+import signal
+import subprocess
+import logging
 __all__ = ['Experiment']
 
 class Experiment(object):
@@ -9,6 +12,7 @@ class Experiment(object):
         self.task = task
         self.agent = agent
         self.max_fps = -1
+
 
     def _step(self):
         self.agent.sense(self.task.get_sensors())
@@ -22,7 +26,6 @@ class Experiment(object):
         self.agent.reset()
         self.task.reset()
         while not self.task.finished:
-            start_time = time.time()
             r = self._step()
             rewards.append(r)
 
@@ -31,10 +34,9 @@ class Experiment(object):
 
         return rewards
 
-    def doEpisodes(self, n=1):
+    def do_episodes(self, n=1):
         rewards = []
 
         for _ in range(n):
             rewards.append(self._episode())
-
         return rewards

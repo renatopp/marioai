@@ -14,7 +14,7 @@ def _run_server() -> subprocess.Popen:
         ['java', 'ch.idsia.scenarios.MainRun', '-server', 'on'],
         stdout=open('/tmp/logOut.log', 'w'),
         stderr=open('/tmp/logErr.log', 'w'),
-        cwd="./server"
+        cwd="./marioai/core/server"
     )
     return p
 

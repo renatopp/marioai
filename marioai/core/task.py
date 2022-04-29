@@ -1,5 +1,5 @@
 
-import marioai
+import marioai.core as core
 
 __all__ = ['Task']
 
@@ -7,9 +7,9 @@ __all__ = ['Task']
 class Task(object):
     '''A task handles communication with the environment.
 
-    It decides how to evaluate the observations, potentially returning 
-    reinforcement rewards or fitness values. Furthermore it is a filter for 
-    what should be visible to the agent. Also, it can potentially act as a 
+    It decides how to evaluate the observations, potentially returning
+    reinforcement rewards or fitness values. Furthermore it is a filter for
+    what should be visible to the agent. Also, it can potentially act as a
     filter on how actions are transmitted to the environment.
 
     Attributes:
@@ -28,7 +28,7 @@ class Task(object):
           environment (Environment): the environment instance.
         '''
 
-        self.env = marioai.Environment(*args, **kwargs)
+        self.env = core.Environment(*args, **kwargs)
         self.finished = False
         self.reward = 0
         self.status = 0
@@ -45,7 +45,10 @@ class Task(object):
         self.reward = 0
         self.status = 0
 
-    def get_sensors(self): 
+    def disconnect(self):
+        self.env.disconnect()
+
+    def get_sensors(self):
         '''Bridge to environment.'''
 
         sense = self.env.get_sensors()

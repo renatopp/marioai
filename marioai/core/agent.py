@@ -1,11 +1,10 @@
-
 __all__ = ['Agent']
 
 class Agent(object):
     '''Base class for an autonomous agent.
 
     Attributes:
-      level_scene (list): a 22x22 numpy array containing the elements of the 
+      level_scene (list): a 22x22 numpy array containing the elements of the
         level, including blocks and enemies.
       on_ground (bool): whether Mario is on ground or not.
       can_jump (bool): whether Mario can jump or not.

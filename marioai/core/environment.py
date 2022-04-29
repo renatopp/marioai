@@ -2,8 +2,11 @@ import sys
 import socket
 import logging
 import time
+import os
+import signal
+import subprocess
 
-from marioai.utils import extractObservation
+from .utils import extractObservation
 
 __all__ = ['Environment']
 
@@ -51,14 +54,42 @@ class Environment(object):
         self.custom_args = ""
         self.fitness_values = 5
 
-        self._tcpclient = TCPClient(name, host, port)
-        self._tcpclient.connect()
+        self._server_process = None
+        self._tcpclient = self._run_server(name, host, port)
+        #self._tcpclient = TCPClient(name, host, port)
+        #self._tcpclient.connect()
+
+    def _run_server(self, name, host, port):
+        self._server_process = subprocess.Popen(
+            ['nohup', 'java', 'ch.idsia.scenarios.MainRun', '-server', 'on'],
+            cwd="marioai/core/server",
+            stdout=open('marioai/core/server/tmp/server_logOut.log', 'w'),
+            stderr=open('marioai/core/server/tmp/server_logErr.log', 'w'),
+        )
+        connections_attempts = 5
+        attempt = 1
+        game_is_down = True
+        while game_is_down:
+            try:
+                print(f"Connection attempt: {attempt}/{connections_attempts}")
+                client = TCPClient(name, host, port)
+                client.connect()
+                game_is_down = False
+                return client
+            except ConnectionRefusedError as e: # pylint: disable=invalid-name
+                if attempt == connections_attempts:
+                    raise e
+                attempt += 1
+                time.sleep(1)
 
 
     @property
     def connected(self):
         return self._tcpclient.connected
 
+    def disconnect(self):
+        self._tcpclient.disconnect()
+        self._server_process.kill()
 
     def get_sensors(self):
         '''Receives an observation from the simulator.
@@ -166,6 +197,7 @@ class TCPClient(object):
         self.connected = False
         self.buffer_size = 4096
 
+
     def __del__(self):
         '''Destructor.'''
 
@@ -179,16 +211,12 @@ class TCPClient(object):
         logging.info(f'[TCPClient] trying to connect to {h}:{p}')
         self.sock = socket.socket()
 
-        try:
-            self.sock.connect((h, p))
-            logging.info(f'[TCPClient] connection to {h}:{p} succeeded')
+        self.sock.connect((h, p))
+        logging.info(f'[TCPClient] connection to {h}:{p} succeeded')
 
-            data = self.recvData()
-            logging.info(f'[TCPClient] greetings received: {data}')
+        data = self.recvData()
+        logging.info(f'[TCPClient] greetings received: {data}')
 
-        except socket.error as message:
-            logging.error(f'[TCPClient] connection error: {message[1]}')
-            sys.exit(1)
 
         message = f'Client: Dear Server, hello! I am {self.name}\r\n'
         self.send_data(str.encode(message))

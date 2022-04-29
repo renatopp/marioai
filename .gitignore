@@ -15,3 +15,6 @@ experimentos
 
 # Virtual Environment
 venv
+
+server_logOut.log
+server_logErr.log
