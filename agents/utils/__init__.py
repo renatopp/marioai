@@ -1,0 +1,25 @@
+
+__all__ = ["OBJECTS"]
+OBJECTS = {
+            -11: "soft obstacle, can jump through",
+            -10: "hard obstacle, cannot pass through",
+            1: "mario",
+            2: "Enemy goomba",
+            3: "Enemy goomba winged",
+            4: "Enemy red koopa",
+            5: "Enemy red koopa winged",
+            6: "Enemy green koopa",
+            7: "Enemy green koopa winged",
+            8: "Enemy bullet bill",
+            9: "Enemy spiky",
+            10: "Enemy spiky winged",
+            12: "Enemy flower",
+            13: "Enemy shell",
+            14: "mushroom",
+            15: "fire_flower",
+            16: "brick (simple/with coin/with mushroom/with flower)",
+            20: "enemy obstacle (ex.: flower pot or parts of a cannon)",
+            21: "question brick (with a coin or mushroom/flower)",
+            25: "mario weapon projectile",
+            42: "undefined",
+        }
