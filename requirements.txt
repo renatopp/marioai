@@ -1,2 +1,4 @@
 numpy==1.22.3
 pandas==1.4.2
+PyYAML>=4.2, <6.0
+anyconfig~=0.10.0
