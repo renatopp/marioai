@@ -2,7 +2,6 @@ import random
 from typing import List
 import marioai.core as core
 import numpy as np
-import pandas as pd
 
 __all__ = ["BaseAgent"]
 
@@ -25,10 +24,14 @@ class BaseAgent(core.Agent):
         }
         self.state = None
         self.frames = 0
+        self.actions = []
+        self.states = []
+        self.rewards = []
 
     def sense(self, obs: List):
         super().sense(obs)
         self.state = self.build_state()
+        self.states.append(self.state)
 
     def build_state(self):
         """Build state from level scene"""
@@ -45,7 +48,7 @@ class BaseAgent(core.Agent):
                 state[f"{o_name}_{dist}"] = self._is_near(o_values, dist)
         for dist in range(1, self.max_dist + 1):
             state[f"has_role_near_{dist}"] = self._has_role(ground_pos, dist)
-        return pd.Series(state)
+        return state
 
     def _is_near(self, objects, dist):
         for i in range(1, 4):
@@ -74,4 +77,10 @@ class BaseAgent(core.Agent):
 
     def act(self):
         # [backward, forward, crouch, jump, speed/bombs]
-        return [0, 1, 0, random.randint(0, 1), random.randint(0, 1)]
+        action = [0, 1, 0, random.randint(0, 1), random.randint(0, 1)]
+        self.actions.append(action)
+        return action
+
+    def give_rewards(self, reward, cum_reward):
+        self.rewards.append(reward)
+        return super().give_rewards(reward, cum_reward)

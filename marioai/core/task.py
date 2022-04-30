@@ -1,5 +1,4 @@
 import marioai.core as core
-
 __all__ = ["Task"]
 
 
@@ -28,11 +27,19 @@ class Task(object):
         """
 
         self.env = core.Environment(*args, **kwargs)
+
         self.finished = False
-        self.reward = 0
         self.status = 0
         self.cum_reward = 0
         self.samples = 0
+        self.reward = {
+                "status": 0,
+                "distance": 0,
+                "timeLeft": 0,
+                "marioMode": 0,
+                "coins": 0,
+                }
+
 
     def reset(self):
         """Reinitialize the environment."""
@@ -41,8 +48,14 @@ class Task(object):
         self.cum_reward = 0
         self.samples = 0
         self.finished = False
-        self.reward = 0
         self.status = 0
+        self.reward = {
+                "status": 0,
+                "distance": 0,
+                "timeLeft": 0,
+                "marioMode": 0,
+                "coins": 0,
+                }
 
     def disconnect(self):
         self.env.disconnect()
@@ -52,7 +65,14 @@ class Task(object):
 
         sense = self.env.get_sensors()
         if len(sense) == self.env.fitness_values:
-            self.reward = sense[1]
+            self.reward = {
+                "status": sense[0],
+                "distance": sense[1],
+                "timeLeft": sense[2],
+                "marioMode": sense[3],
+                "coins": sense[4],
+            }
+            #self.reward = sense[1:]
             self.status = sense[0]
             self.finished = True
 
@@ -62,6 +82,7 @@ class Task(object):
         """Bridge to environment."""
 
         if not self.finished:
+            #print(f"Action: {action}, Reward:{self.reward}")
             self.env.perform_action(action)
-            self.cum_reward += self.reward
+            self.cum_reward += self.reward["distance"]
             self.samples += 1

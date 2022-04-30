@@ -17,7 +17,8 @@ class Runner:
         level_seed: int = 1,
         time_limit: int = 100,
         visualization: bool = True,
-        fitness_values: int = 5):
+        fitness_values: int = 5,
+        response_delay: int = 2):
         """ This class running a mario game
 
         Args:
@@ -31,12 +32,13 @@ class Runner:
             time_limit (int, optional): Time limit. Defaults to 100.
             visualization (bool, optional): If the game will be streamed. Defaults to True.
             fitness_values (int, optional): Fitness value. Defaults to 5.
+            response_delay (int, optional): Response delay. Defaults to 2.
         """
         self.task = core.Task()
         self.exp = core.Experiment(self.task, agent)
         # Set experiment values
         self.exp.max_fps = max_fps
-
+        self.exp.response_delay = response_delay
         # Set environments values
         self.task.env.level_difficulty = level_difficult
         self.task.env.level_type = level_type

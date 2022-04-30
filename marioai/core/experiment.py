@@ -10,15 +10,22 @@ __all__ = ["Experiment"]
 class Experiment(object):
     """Episodic Experiment"""
 
-    def __init__(self, task, agent):
+    def __init__(self, task, agent, response_delay=0):
+        self.response_delay = response_delay
+        self._frame = 0
         self.task = task
         self.agent = agent
         self.max_fps = -1
-
+        self.action = 0
     def _step(self):
-        self.agent.sense(self.task.get_sensors())
-        self.task.perform_action(self.agent.act())
-        self.agent.give_rewards(self.task.reward, self.task.cum_reward)
+        sensors = self.task.get_sensors()
+        if self.task.finished or (self._frame % (self.response_delay + 1)) == 0:
+            self.agent.sense(sensors)
+            self.task.perform_action(self.agent.act())
+            self.agent.give_rewards(self.task.reward, self.task.cum_reward)
+        else:
+            self.task.perform_action([0, 0, 0, 0, 0])
+        self._frame += 1
         return self.task.reward
 
     def _episode(self):
