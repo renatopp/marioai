@@ -3,16 +3,17 @@ import os
 import signal
 import subprocess
 import logging
-__all__ = ['Experiment']
+
+__all__ = ["Experiment"]
+
 
 class Experiment(object):
-    '''Episodic Experiment'''
+    """Episodic Experiment"""
 
     def __init__(self, task, agent):
         self.task = task
         self.agent = agent
         self.max_fps = -1
-
 
     def _step(self):
         self.agent.sense(self.task.get_sensors())
@@ -30,7 +31,7 @@ class Experiment(object):
             rewards.append(r)
 
             if self.max_fps > 0:
-                time.sleep(1./self.max_fps)
+                time.sleep(1.0 / self.max_fps)
 
         return rewards
 

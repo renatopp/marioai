@@ -5,13 +5,15 @@ import time
 import os
 import signal
 import subprocess
+from pathlib import Path
 
 from .utils import extractObservation
 
-__all__ = ['Environment']
+__all__ = ["Environment"]
+
 
 class Environment(object):
-    '''Interface to the MarioAI simulator.
+    """Interface to the MarioAI simulator.
 
     Attributes:
       level_difficulty (int): the level difficulty. There is no limit, but it
@@ -32,16 +34,16 @@ class Environment(object):
       fitness_values (int): defaults to 5
       connected (bool): whether the environment is connected to the simulator
         or not.
-    '''
+    """
 
-    def __init__(self, name='Unnamed agent', host='localhost', port=4242):
-        '''Constructor.
+    def __init__(self, name="Unnamed agent", host="localhost", port=4242):
+        """Constructor.
 
         Args:
           name (str): the bot's name, defaults to "Unnamed agent".
           host (str): the server address, defaults to "localhost".
           port (int): the server address, defaults to 4242.
-        '''
+        """
         self.level_difficulty = 0
         self.level_type = 0
         self.creatures_enabled = True
@@ -56,15 +58,19 @@ class Environment(object):
 
         self._server_process = None
         self._tcpclient = self._run_server(name, host, port)
-        #self._tcpclient = TCPClient(name, host, port)
-        #self._tcpclient.connect()
+        # self._tcpclient = TCPClient(name, host, port)
+        # self._tcpclient.connect()
 
     def _run_server(self, name, host, port):
+        print(os.getcwd())
+
+        source_path = Path(__file__).resolve()
+        source_dir = source_path.parent
         self._server_process = subprocess.Popen(
-            ['nohup', 'java', 'ch.idsia.scenarios.MainRun', '-server', 'on'],
-            cwd="marioai/core/server",
-            stdout=open('marioai/core/server/tmp/server_logOut.log', 'w'),
-            stderr=open('marioai/core/server/tmp/server_logErr.log', 'w'),
+            ["nohup", "java", "ch.idsia.scenarios.MainRun", "-server", "on"],
+            cwd=source_dir/"server",
+            stdout=open(source_dir/"server/tmp/server_logOut.log", "w", encoding="utf-8"),
+            stderr=open(source_dir/"server/tmp/server_logErr.log", "w", encoding="utf-8"),
         )
         connections_attempts = 5
         attempt = 1
@@ -76,12 +82,11 @@ class Environment(object):
                 client.connect()
                 game_is_down = False
                 return client
-            except ConnectionRefusedError as e: # pylint: disable=invalid-name
+            except ConnectionRefusedError as e:  # pylint: disable=invalid-name
                 if attempt == connections_attempts:
                     raise e
                 attempt += 1
                 time.sleep(1)
-
 
     @property
     def connected(self):
@@ -92,26 +97,25 @@ class Environment(object):
         self._server_process.kill()
 
     def get_sensors(self):
-        '''Receives an observation from the simulator.
+        """Receives an observation from the simulator.
 
         Returns:
           A list with the observation values. See agent.
-        '''
+        """
 
         data = self._tcpclient.recvData()
 
-        if data == 'ciao':
+        if data == "ciao":
             self._tcpclient.disconnect()
 
         elif len(data) > 5:
             return extractObservation(data)
 
         else:
-            logging.warning(f'[ENVIRONMENT] Unexpected received data: {data}')
-
+            logging.warning(f"[ENVIRONMENT] Unexpected received data: {data}")
 
     def perform_action(self, action):
-        ''' Takes a numpy array of ints and sends as a string to server.
+        """Takes a numpy array of ints and sends as a string to server.
 
         Each position of the array represents a different action, use 1 to
         enable an action and 0 to disable it:
@@ -128,15 +132,15 @@ class Environment(object):
 
         Args:
           action (list): a list of integers.
-        '''
+        """
 
         action_str = ""
         for i in range(5):
             if action[i] == 1:
-                action_str += '1'
+                action_str += "1"
 
             elif action[i] == 0:
-                action_str += '0'
+                action_str += "0"
 
             else:
                 raise ValueError("something very dangerous happen....")
@@ -144,10 +148,9 @@ class Environment(object):
         action_str += "\r\n"
         self._tcpclient.send_data(str.encode(action_str))
 
-
     def reset(self):
-        '''Resets the simulator and configure it according to the variables set
-        here.'''
+        """Resets the simulator and configure it according to the variables set
+        here."""
 
         argstring = f"-ld {self.level_difficulty} -lt {self.level_type} -mm {self.init_mario_mode} -ls {self.level_seed} -tl {self.time_limit} "
         if self.creatures_enabled:
@@ -163,14 +166,13 @@ class Environment(object):
         if self.fast_tcp:
             argstring += "-fastTCP on"
 
-        self._tcpclient.send_data(str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n"))
-
-
-
+        self._tcpclient.send_data(
+            str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n")
+        )
 
 
 class TCPClient(object):
-    '''A simple client for the marioai TCP server.
+    """A simple client for the marioai TCP server.
 
     Attributes:
       name (str): the bot's name.
@@ -179,16 +181,16 @@ class TCPClient(object):
       sock (Socket): the socket object.
       connected (bool): whether the client is connected or not.
       buffer_size (int): the buffer size.
-    '''
+    """
 
-    def __init__(self, name='', host='localhost', port=4242):
-        '''Constructor.
+    def __init__(self, name="", host="localhost", port=4242):
+        """Constructor.
 
         Args:
           name (str): the bot's name.
           host (str): the server address, defaults to "localhost".
           port (int): the server address, defaults to 4242.
-        '''
+        """
 
         self.name = name
         self.host = host
@@ -197,64 +199,60 @@ class TCPClient(object):
         self.connected = False
         self.buffer_size = 4096
 
-
     def __del__(self):
-        '''Destructor.'''
+        """Destructor."""
 
         self.disconnect()
 
     def connect(self):
-        '''Connects to the provided address.'''
+        """Connects to the provided address."""
 
         h, p = self.host, self.port
 
-        logging.info(f'[TCPClient] trying to connect to {h}:{p}')
+        logging.info(f"[TCPClient] trying to connect to {h}:{p}")
         self.sock = socket.socket()
 
         self.sock.connect((h, p))
-        logging.info(f'[TCPClient] connection to {h}:{p} succeeded')
+        logging.info(f"[TCPClient] connection to {h}:{p} succeeded")
 
         data = self.recvData()
-        logging.info(f'[TCPClient] greetings received: {data}')
+        logging.info(f"[TCPClient] greetings received: {data}")
 
-
-        message = f'Client: Dear Server, hello! I am {self.name}\r\n'
+        message = f"Client: Dear Server, hello! I am {self.name}\r\n"
         self.send_data(str.encode(message))
 
         self.connected = True
 
     def disconnect(self):
-        '''Disconnects from the server.'''
+        """Disconnects from the server."""
 
         self.sock.close()
         self.connected = False
-        logging.info('[TCPClient] client disconnected')
+        logging.info("[TCPClient] client disconnected")
 
     def recvData(self):
-        '''Receives data from server.
+        """Receives data from server.
 
         Returns:
           The received string data.
-        '''
+        """
 
         try:
             return self.sock.recv(self.buffer_size)
 
         except socket.error as message:
-            logging.error(f'[TCPClient] error while receiving. Message: {message}')
+            logging.error(f"[TCPClient] error while receiving. Message: {message}")
             raise socket.error
 
     def send_data(self, data):
-        '''Send data to server.
+        """Send data to server.
 
         Args:
           data (str): the string to be sent.
-        '''
+        """
         try:
-          self.sock.send(data)
+            self.sock.send(data)
 
         except socket.error as message:
-          logging.error(f'[TCPClient] error while sending. Message: {message}')
-          raise socket.error
-
-
+            logging.error(f"[TCPClient] error while sending. Message: {message}")
+            raise socket.error

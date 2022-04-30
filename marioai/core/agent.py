@@ -1,7 +1,8 @@
-__all__ = ['Agent']
+__all__ = ["Agent"]
+
 
 class Agent(object):
-    '''Base class for an autonomous agent.
+    """Base class for an autonomous agent.
 
     Attributes:
       level_scene (list): a 22x22 numpy array containing the elements of the
@@ -11,10 +12,10 @@ class Agent(object):
       mario_floats (list): 2-tuple with mario position.
       enemies_floats (list): list of 2-tuples with enimies_positions.
       episode_over (bool): whether the episode is over or not.
-    '''
+    """
 
     def __init__(self):
-        '''Contructor.'''
+        """Contructor."""
         self.level_scene = None
         self.on_ground = None
         self.can_jump = None
@@ -23,12 +24,12 @@ class Agent(object):
         self.episode_over = False
 
     def reset(self):
-        '''New episode.'''
+        """New episode."""
 
-        self.episode_over = False;
+        self.episode_over = False
 
     def sense(self, obs):
-        '''Receive sense.'''
+        """Receive sense."""
 
         if len(obs) != 6:
             self.episode_over = True
@@ -40,9 +41,9 @@ class Agent(object):
             self.level_scene = obs[4]
 
     def act(self):
-        '''Return an action.'''
+        """Return an action."""
         pass
 
     def give_rewards(self, reward, cum_reward):
-        '''Register current reward.'''
+        """Register current reward."""
         pass

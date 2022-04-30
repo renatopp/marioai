@@ -1,11 +1,10 @@
-
 import marioai.core as core
 
-__all__ = ['Task']
+__all__ = ["Task"]
 
 
 class Task(object):
-    '''A task handles communication with the environment.
+    """A task handles communication with the environment.
 
     It decides how to evaluate the observations, potentially returning
     reinforcement rewards or fitness values. Furthermore it is a filter for
@@ -19,14 +18,14 @@ class Task(object):
       status (int): ?
       cum_reward (int): the sum reward since the beginning of the episode.
       samples (int): number of steps in the current episode.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
-        '''Constructor.
+        """Constructor.
 
         Args:
           environment (Environment): the environment instance.
-        '''
+        """
 
         self.env = core.Environment(*args, **kwargs)
         self.finished = False
@@ -36,7 +35,7 @@ class Task(object):
         self.samples = 0
 
     def reset(self):
-        '''Reinitialize the environment.'''
+        """Reinitialize the environment."""
 
         self.env.reset()
         self.cum_reward = 0
@@ -49,7 +48,7 @@ class Task(object):
         self.env.disconnect()
 
     def get_sensors(self):
-        '''Bridge to environment.'''
+        """Bridge to environment."""
 
         sense = self.env.get_sensors()
         if len(sense) == self.env.fitness_values:
@@ -60,10 +59,9 @@ class Task(object):
         return sense
 
     def perform_action(self, action):
-        '''Bridge to environment.'''
+        """Bridge to environment."""
 
         if not self.finished:
             self.env.perform_action(action)
             self.cum_reward += self.reward
             self.samples += 1
-

@@ -1,7 +1,8 @@
 import random
 import marioai.core as core
 
-__all__ = ['RandomAgent']
+__all__ = ["RandomAgent"]
+
 
 class RandomAgent(core.Agent):
     def act(self):

@@ -1,7 +1,10 @@
 import marioai.core as core
 
 __all__ = ["Runner"]
-class Runner():
+
+
+class Runner:
+    """This class runs a experiment."""
 
     def __init__(self, agent):
         self.task = core.Task()
@@ -15,4 +18,3 @@ class Runner():
 
     def close(self):
         self.task.disconnect()
-
