@@ -61,3 +61,6 @@ class Runner:
         """This functions close the game
         """
         self.task.disconnect()
+
+    def __del__(self):
+        self.close()

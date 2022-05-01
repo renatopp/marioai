@@ -165,7 +165,6 @@ class Environment(object):
 
         if self.fast_tcp:
             argstring += "-fastTCP on"
-
         self._tcpclient.send_data(
             str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n")
         )
