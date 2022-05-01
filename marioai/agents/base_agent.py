@@ -61,6 +61,8 @@ class BaseAgent(core.Agent):
         """Build state from level scene"""
         ground_pos = self._get_ground()
         state = {
+            "region_x": int(self.mario_floats[0]//250),
+            #"y": int(self.mario_floats[1]),
             "episode_starts": (self.level_scene != 0).any(),
             "on_ground": self.on_ground,
             "can_jump": self.can_jump,
