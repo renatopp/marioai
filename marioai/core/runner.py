@@ -9,6 +9,7 @@ class Runner:
     def __init__(
         self,
         agent: core.Agent,
+        task: core.Task,
         max_fps: int =24,
         level_difficult: int = 0,
         level_type: int = 0,
@@ -34,7 +35,7 @@ class Runner:
             fitness_values (int, optional): Fitness value. Defaults to 5.
             response_delay (int, optional): Response delay. Defaults to 2.
         """
-        self.task = core.Task()
+        self.task = task
         self.exp = core.Experiment(self.task, agent)
         # Set experiment values
         self.exp.max_fps = max_fps

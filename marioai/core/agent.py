@@ -28,17 +28,15 @@ class Agent(object):
 
         self.episode_over = False
 
-    def sense(self, obs):
+    def sense(self, state):
         """Receive sense."""
 
-        if len(obs) != 6:
-            self.episode_over = True
-        else:
-            self.can_jump = obs[0]
-            self.on_ground = obs[1]
-            self.mario_floats = obs[2]
-            self.enemies_floats = obs[3]
-            self.level_scene = obs[4]
+        self.episode_over = state["episode_over"]
+        self.can_jump = state["can_jump"]
+        self.on_ground = state["on_ground"]
+        self.mario_floats = state["mario_floats"]
+        self.enemies_floats = state["enemies_floats"]
+        self.level_scene = state["level_scene"]
 
     def act(self):
         """Return an action."""

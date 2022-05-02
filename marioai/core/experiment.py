@@ -18,9 +18,9 @@ class Experiment(object):
         self.max_fps = -1
         self.action = 0
     def _step(self):
-        sensors = self.task.get_sensors()
+        state = self.task.get_sensors()
         if self.task.finished or (self._frame % (self.response_delay + 1)) == 0:
-            self.agent.sense(sensors)
+            self.agent.sense(state)
             self.task.perform_action(self.agent.act())
             self.agent.give_rewards(self.task.reward, self.task.cum_reward)
         else:
