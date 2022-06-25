@@ -1,7 +1,9 @@
 import random
 from typing import List
-import marioai.core as core
+
 import numpy as np
+
+import marioai.core as core
 
 __all__ = ["BaseAgent"]
 
@@ -16,8 +18,6 @@ class BaseAgent(core.Agent):
         self.actions = []
         self.states = []
         self.rewards = []
-
-
 
     def sense(self, state):
         self.state = state

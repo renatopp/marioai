@@ -1,10 +1,10 @@
-import sys
-import socket
 import logging
-import time
 import os
 import signal
+import socket
 import subprocess
+import sys
+import time
 from pathlib import Path
 
 from .utils import extractObservation
@@ -68,9 +68,13 @@ class Environment(object):
         source_dir = source_path.parent
         self._server_process = subprocess.Popen(
             ["nohup", "java", "ch.idsia.scenarios.MainRun", "-server", "on"],
-            cwd=source_dir/"server",
-            stdout=open(source_dir/"server/tmp/server_logOut.log", "w", encoding="utf-8"),
-            stderr=open(source_dir/"server/tmp/server_logErr.log", "w", encoding="utf-8"),
+            cwd=source_dir / "server",
+            stdout=open(
+                source_dir / "server/tmp/server_logOut.log", "w", encoding="utf-8"
+            ),
+            stderr=open(
+                source_dir / "server/tmp/server_logErr.log", "w", encoding="utf-8"
+            ),
         )
         connections_attempts = 5
         attempt = 1
@@ -86,7 +90,7 @@ class Environment(object):
                 if attempt == connections_attempts:
                     raise e
                 attempt += 1
-                time.sleep(1)
+                time.sleep(5)
 
     @property
     def connected(self):

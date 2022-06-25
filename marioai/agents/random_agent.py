@@ -1,4 +1,5 @@
 import random
+
 import marioai.core as core
 
 __all__ = ["RandomAgent"]

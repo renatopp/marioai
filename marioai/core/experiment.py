@@ -1,8 +1,8 @@
-import time
+import logging
 import os
 import signal
 import subprocess
-import logging
+import time
 
 __all__ = ["Experiment"]
 
@@ -17,6 +17,7 @@ class Experiment(object):
         self.agent = agent
         self.max_fps = -1
         self.action = 0
+
     def _step(self):
         state = self.task.get_sensors()
         if self.task.finished or (self._frame % (self.response_delay + 1)) == 0:
@@ -39,12 +40,11 @@ class Experiment(object):
 
             if self.max_fps > 0:
                 time.sleep(1.0 / self.max_fps)
-
         return rewards
 
     def do_episodes(self, n=1):
         rewards = []
-
         for _ in range(n):
-            rewards.append(self._episode())
+            r = self._episode()
+            rewards.append(r)
         return rewards

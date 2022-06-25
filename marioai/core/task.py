@@ -1,5 +1,6 @@
-import marioai.core as core
 import numpy as np
+
+import marioai.core as core
 
 __all__ = ["Task"]
 
@@ -14,7 +15,7 @@ class Task(object):
 
     Attributes:
       env (Environment): the environment instance.
-      finished (bool): ?
+      finished (bool): ?    '
       reward (int): the current reward of the simulation.
       status (int): ?
       cum_reward (int): the sum reward since the beginning of the episode.
@@ -27,7 +28,8 @@ class Task(object):
         max_dist: int = 2,
         player_pos: int = 11,
         *args,
-        **kwargs):
+        **kwargs,
+    ):
         """Constructor.
 
         Args:
@@ -44,29 +46,31 @@ class Task(object):
         self.cum_reward = 0
         self.samples = 0
         self.reward = {
-                "status": 0,
-                "distance": 0,
-                "timeLeft": 0,
-                "marioMode": 0,
-                "coins": 0,
-                }
-        self._action_pool = np.array([
-            # [backward, forward, crouch, jump, speed/bombs]
-            [0, 0, 0, 0, 0], # do nothing
-            [0, 0, 0, 1, 0], # jump
-            [0, 0, 0, 0, 1], # bombs
-            [0, 0, 1, 0, 0], # crouch
-            [0, 0, 1, 0, 1], # crouch and bombs
-            [0, 0, 0, 1, 1], # jump and bombs/speed
-            [0, 1, 0, 0, 0], # move forward
-            [0, 1, 0, 0, 1], # move forward and bombs/speed
-            [0, 1, 0, 1, 0], # jump forward
-            [0, 1, 0, 1, 1], # jump forward and bombs/speed
-            [1, 0, 0, 0, 0], # move backward
-            [1, 0, 0, 0, 1], # move backward and bombs/speed
-            [1, 0, 0, 1, 0], # jump backward
-            [1, 0, 0, 1, 1], # jump backward and bombs/speed
-        ])
+            "status": 0,
+            "distance": 0,
+            "timeLeft": 0,
+            "marioMode": 0,
+            "coins": 0,
+        }
+        self._action_pool = np.array(
+            [
+                # [backward, forward, crouch, jump, speed/bombs]
+                [0, 0, 0, 0, 0],  # do nothing
+                [0, 0, 0, 1, 0],  # jump
+                [0, 0, 0, 0, 1],  # bombs
+                [0, 0, 1, 0, 0],  # crouch
+                [0, 0, 1, 0, 1],  # crouch and bombs
+                [0, 0, 0, 1, 1],  # jump and bombs/speed
+                [0, 1, 0, 0, 0],  # move forward
+                [0, 1, 0, 0, 1],  # move forward and bombs/speed
+                [0, 1, 0, 1, 0],  # jump forward
+                [0, 1, 0, 1, 1],  # jump forward and bombs/speed
+                [1, 0, 0, 0, 0],  # move backward
+                [1, 0, 0, 0, 1],  # move backward and bombs/speed
+                [1, 0, 0, 1, 0],  # jump backward
+                [1, 0, 0, 1, 1],  # jump backward and bombs/speed
+            ]
+        )
         self.objects = {
             "soft": [
                 -11,
@@ -86,12 +90,12 @@ class Task(object):
         self.finished = False
         self.status = 0
         self.reward = {
-                "status": 0,
-                "distance": 0,
-                "timeLeft": 0,
-                "marioMode": 0,
-                "coins": 0,
-                }
+            "status": 0,
+            "distance": 0,
+            "timeLeft": 0,
+            "marioMode": 0,
+            "coins": 0,
+        }
 
     def filter_actions(self) -> np.array:
         """This function filter the action pool"""
@@ -124,9 +128,7 @@ class Task(object):
 
     def compute_reward(self, reward_data):
         """Function that compute reward"""
-        if "distance" in reward_data:
-            return reward_data["distance"]
-        return 0
+        return reward_data
 
     def perform_action(self, action):
         """Bridge to environment."""
@@ -138,7 +140,13 @@ class Task(object):
 
     def build_state(self, sense):
         """Build state from level scene"""
-        state_vars = ["can_jump", "on_ground", "mario_floats", "enemies_floats", "level_scene"]
+        state_vars = [
+            "can_jump",
+            "on_ground",
+            "mario_floats",
+            "enemies_floats",
+            "level_scene",
+        ]
         state = {}
         if len(sense) == 6:
             for var, value in zip(state_vars, sense[:5]):
@@ -149,14 +157,26 @@ class Task(object):
                 state[var] = None
             state["episode_over"] = True
 
-        ground_pos = self._get_ground(state["level_scene"], state["on_ground"]) if not state["episode_over"] else None
+        ground_pos = (
+            self._get_ground(state["level_scene"], state["on_ground"])
+            if not state["episode_over"]
+            else None
+        )
 
         for o_name, o_values in self.objects.items():
             for dist in range(1, self.max_dist + 1):
-                state[f"{o_name}_{dist}"] = self._is_near(state["level_scene"], o_values, dist) if not state["episode_over"] else None
+                state[f"{o_name}_{dist}"] = (
+                    self._is_near(state["level_scene"], o_values, dist)
+                    if not state["episode_over"]
+                    else None
+                )
 
         for dist in range(1, self.max_dist + 1):
-            state[f"has_role_near_{dist}"] = self._has_role(state["level_scene"], ground_pos, dist) if not state["episode_over"] else None
+            state[f"has_role_near_{dist}"] = (
+                self._has_role(state["level_scene"], ground_pos, dist)
+                if not state["episode_over"]
+                else None
+            )
 
         return state
 

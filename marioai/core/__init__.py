@@ -1,8 +1,8 @@
 import logging
 
-from .environment import *
-from .task import *
+from . import utils
 from .agent import *
+from .environment import *
 from .experiment import *
 from .runner import *
-from . import utils
+from .task import *

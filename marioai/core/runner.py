@@ -1,5 +1,9 @@
 from typing import List
-import marioai.core as core
+
+from .agent import Agent
+from .task import Task
+from .experiment import Experiment
+
 __all__ = ["Runner"]
 
 
@@ -8,9 +12,9 @@ class Runner:
 
     def __init__(
         self,
-        agent: core.Agent,
-        task: core.Task,
-        max_fps: int =24,
+        agent: Agent,
+        task: Task,
+        max_fps: int = 24,
         level_difficult: int = 0,
         level_type: int = 0,
         creatures_enabled: bool = True,
@@ -19,8 +23,9 @@ class Runner:
         time_limit: int = 100,
         visualization: bool = True,
         fitness_values: int = 5,
-        response_delay: int = 2):
-        """ This class running a mario game
+        response_delay: int = 2,
+    ):
+        """This class running a mario game
 
         Args:
             agent (core.Agent): Agent used in game.
@@ -36,7 +41,7 @@ class Runner:
             response_delay (int, optional): Response delay. Defaults to 2.
         """
         self.task = task
-        self.exp = core.Experiment(self.task, agent)
+        self.exp = Experiment(self.task, agent)
         # Set experiment values
         self.exp.max_fps = max_fps
         self.exp.response_delay = response_delay
@@ -59,8 +64,7 @@ class Runner:
         return rewards
 
     def close(self):
-        """This functions close the game
-        """
+        """This functions close the game"""
         self.task.disconnect()
 
     def __del__(self):

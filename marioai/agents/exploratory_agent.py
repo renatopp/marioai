@@ -1,7 +1,9 @@
 import random
-import marioai.core as core
+
 import numpy as np
 import pandas as pd
+
+import marioai.core as core
 
 __all__ = ["ExploratoryAgent"]
 
@@ -69,8 +71,8 @@ class ExploratoryAgent(core.Agent):
             input("a")
         self.frames += 1
 
-        return state
+        self.state = state
 
     def act(self):
-        state = self._build_state()
+        self._build_state()
         return [0, 1, 0, random.randint(0, 1), random.randint(0, 1)]
