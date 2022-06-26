@@ -1,12 +1,15 @@
-from marioai.core import Runner, Task
-from marioai.agents import BaseAgent
+from copy import deepcopy
+
 import numpy as np
 from tqdm import tqdm
-from copy import deepcopy
+
+from marioai.agents import BaseAgent
+from marioai.core import Runner, Task
 
 __all__ = ["MonteCarloAgent"]
 
-class State():
+
+class State:
     def __init__(self, **kwargs):
         self.state_attrs = []
         for key, value in kwargs.items():
@@ -18,6 +21,7 @@ class State():
         for attr in self.state_attrs:
             repr_str += f"{attr}={getattr(self, attr)}, "
         return repr_str
+
     def __hash__(self):
         attrs = []
         for attr in self.state_attrs:
@@ -26,7 +30,9 @@ class State():
 
     def __eq__(self, other):
         for attr in self.state_attrs:
-            if isinstance(getattr(self, attr), np.ndarray) or isinstance(getattr(other, attr), np.ndarray):
+            if isinstance(getattr(self, attr), np.ndarray) or isinstance(
+                getattr(other, attr), np.ndarray
+            ):
                 if (getattr(self, attr) != getattr(other, attr)).any():
                     return False
             else:
@@ -34,15 +40,16 @@ class State():
                     return False
         return True
 
-class MonteCarloAgent(BaseAgent):
 
+class MonteCarloAgent(BaseAgent):
     def __init__(
         self,
         n_samples,
         discount,
         min_epsilon=0.3,
         reward_threshold=0,
-        reward_increment=0.5):
+        reward_increment=0.5,
+    ):
 
         super().__init__()
         self.n_samples = n_samples
@@ -64,7 +71,7 @@ class MonteCarloAgent(BaseAgent):
     def reset(self):
         self.actual_x = 0
         self.states = []
-        self.rewards =  []
+        self.rewards = []
         self.actions = []
         self.actions_idx = []
 
@@ -111,27 +118,30 @@ class MonteCarloAgent(BaseAgent):
         self._action_pool = task._action_pool
         self.policy_kind = "e_greedy"
         runner = Runner(self, task, **runner_kwargs)
-        self.epsilon = 1.
-        for k in (pbar :=tqdm(range(self.n_samples), total=self.n_samples)):
+        self.epsilon = 1.0
+        for k in (pbar := tqdm(range(self.n_samples), total=self.n_samples)):
             # Run sample
             runner.run()
             # Update model
             self.fit_rewards.append(self._step())
             # Update epsilon
-            if self.epsilon > self.min_epsilon and self.fit_rewards[-1] >= self.reward_threshold:
-                epsilon_delta = 1/(self.n_samples)
-                #epsilon_delta = 0.1
+            if (
+                self.epsilon > self.min_epsilon
+                and self.fit_rewards[-1] >= self.reward_threshold
+            ):
+                epsilon_delta = 1 / (self.n_samples)
+                # epsilon_delta = 0.1
                 self.epsilon = self.epsilon - epsilon_delta
                 self.reward_threshold = self.reward_threshold + self.reward_increment
-            pbar.set_description(f"Last Reward {self.fit_rewards[-1]:.2f} Epsilon: {self.epsilon:.3f} Reward Th: {self.reward_threshold: .3f}")
+            pbar.set_description(
+                f"Last Reward {self.fit_rewards[-1]:.2f} Epsilon: {self.epsilon:.3f} Reward Th: {self.reward_threshold: .3f}"
+            )
             pbar.refresh()
 
         runner.close()
         self.in_fit = False
         self.policy_kind = "greedy"
         return self
-
-
 
     def _step(self):
         # Compute all rewards
@@ -141,16 +151,20 @@ class MonteCarloAgent(BaseAgent):
             state = State(**state_dict)
             # Increment counter
             if state not in self._N:
-               self._N[state] = np.zeros(self._Q[state].shape[0])
+                self._N[state] = np.zeros(self._Q[state].shape[0])
             self._N[state][action] += 1
 
             # Compute Gt
             future_rewards = rewards[i:]
-            discounts = np.array([self.epsilon ** k for k in range(future_rewards.shape[0])])
-            g_t = np.dot(discounts, future_rewards)/self.n_samples
+            discounts = np.array(
+                [self.epsilon**k for k in range(future_rewards.shape[0])]
+            )
+            g_t = np.dot(discounts, future_rewards) / self.n_samples
 
             # Update Q(s,a)
             q_value = self._Q[state][action]
-            self._Q[state][action] = q_value + (1/self._N[state][action])*(g_t - q_value)
+            self._Q[state][action] = q_value + (1 / self._N[state][action]) * (
+                g_t - q_value
+            )
 
         return rewards.sum()

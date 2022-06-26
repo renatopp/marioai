@@ -104,12 +104,12 @@ def extractObservation(data: bytes):
                 k += 1
         k += 3
         try:
-            float_x  = float(data[k])
+            float_x = float(data[k])
         except ValueError:
             float_x = float(data[k][:-2])
 
         try:
-            float_y  = float(data[k + 1])
+            float_y = float(data[k + 1])
         except ValueError:
             float_y = float(data[k + 1][:-2])
         marioFloats = (float_x, float_y)

@@ -1,36 +1,35 @@
-import time
-from grpc import Status
 import gym
-from gym import spaces
 import numpy as np
+from gym import spaces
+
 from ..core import Environment
 
 __all__ = ["MarioEnv"]
 
 ACTIONS = [
-            # [backward, forward, crouch, jump, speed/bombs]
-            [0, 0, 0, 0, 0],  # do nothing
-            [0, 0, 0, 1, 0],  # jump
-            [0, 0, 0, 0, 1],  # bombs
-            [0, 0, 1, 0, 0],  # crouch
-            [0, 0, 1, 0, 1],  # crouch and bombs
-            [0, 0, 0, 1, 1],  # jump and bombs/speed
-            [0, 1, 0, 0, 0],  # move forward
-            [0, 1, 0, 0, 1],  # move forward and bombs/speed
-            [0, 1, 0, 1, 0],  # jump forward
-            [0, 1, 0, 1, 1],  # jump forward and bombs/speed
-            [1, 0, 0, 0, 0],  # move backward
-            [1, 0, 0, 0, 1],  # move backward and bombs/speed
-            [1, 0, 0, 1, 0],  # jump backward
-            [1, 0, 0, 1, 1],  # jump backward and bombs/speed
-        ]
+    # [backward, forward, crouch, jump, speed/bombs]
+    [0, 0, 0, 0, 0],  # do nothing
+    [0, 0, 0, 1, 0],  # jump
+    [0, 0, 0, 0, 1],  # bombs
+    [0, 0, 1, 0, 0],  # crouch
+    [0, 0, 1, 0, 1],  # crouch and bombs
+    [0, 0, 0, 1, 1],  # jump and bombs/speed
+    [0, 1, 0, 0, 0],  # move forward
+    [0, 1, 0, 0, 1],  # move forward and bombs/speed
+    [0, 1, 0, 1, 0],  # jump forward
+    [0, 1, 0, 1, 1],  # jump forward and bombs/speed
+    [1, 0, 0, 0, 0],  # move backward
+    [1, 0, 0, 0, 1],  # move backward and bombs/speed
+    [1, 0, 0, 1, 0],  # jump backward
+    [1, 0, 0, 1, 1],  # jump backward and bombs/speed
+]
 
 LEVEL_SHAPE = (22, 22)
 
 PLAYER_POSITION = 11
 
-class MarioEnv(gym.Env):
 
+class MarioEnv(gym.Env):
     def __init__(
         self,
         level_difficult: int = 0,
@@ -41,7 +40,8 @@ class MarioEnv(gym.Env):
         time_limit: int = 100,
         max_fps: int = 24,
         visualization: bool = True,
-        fitness_values: int = 5,):
+        fitness_values: int = 5,
+    ):
         self._env = Environment()
         self.max_fps = max_fps
         """
@@ -99,21 +99,19 @@ class MarioEnv(gym.Env):
             self.finished = True
             state["level_scene"] = np.zeros(LEVEL_SHAPE)
 
-
         return state
 
     def reset(self):
         self._env.reset()
         sense = self._env.get_sensors()
         self.finished = False
-        #self._env.perform_action(ACTIONS[0])
+        # self._env.perform_action(ACTIONS[0])
         observation = {
-                "level_scene": np.zeros(LEVEL_SHAPE),
-                "can_jump": 0,
-                "on_ground": 0,
-            }
+            "level_scene": np.zeros(LEVEL_SHAPE),
+            "can_jump": 0,
+            "on_ground": 0,
+        }
         return observation["level_scene"]
-
 
     def step(self, action):
         self._env.perform_action(ACTIONS[action])

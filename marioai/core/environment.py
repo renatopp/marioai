@@ -151,7 +151,6 @@ class Environment(object):
         action_str += "\r\n"
         self._tcpclient.send_data(str.encode(action_str))
 
-
     def reset(self):
         """Resets the simulator and configure it according to the variables set
         here."""
@@ -172,6 +171,7 @@ class Environment(object):
         self._tcpclient.send_data(
             str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n")
         )
+
 
 class TCPClient(object):
     """A simple client for the marioai TCP server.

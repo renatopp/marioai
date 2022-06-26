@@ -1,8 +1,8 @@
 from typing import List
 
 from .agent import Agent
-from .task import Task
 from .experiment import Experiment
+from .task import Task
 
 __all__ = ["Runner"]
 
