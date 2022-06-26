@@ -69,7 +69,6 @@ class MonteCarloAgent(BaseAgent):
         self.actions_idx = []
 
     def compute_reward(self, reward_data):
-        print(reward_data)
         if reward_data["status"] == 1:
             return reward_data["distance"] * 2
         if "distance" in reward_data:

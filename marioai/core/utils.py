@@ -103,7 +103,16 @@ def extractObservation(data: bytes):
                 levelScene[i, j] = int(data[k + 3])
                 k += 1
         k += 3
-        marioFloats = (float(data[k]), float(data[k + 1]))
+        try:
+            float_x  = float(data[k])
+        except ValueError:
+            float_x = float(data[k][:-2])
+
+        try:
+            float_y  = float(data[k + 1])
+        except ValueError:
+            float_y = float(data[k + 1][:-2])
+        marioFloats = (float_x, float_y)
         k += 2
         while k < len(data):
             enemiesFloats.append(float(data[k]))

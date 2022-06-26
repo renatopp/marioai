@@ -106,7 +106,6 @@ class Environment(object):
         Returns:
           A list with the observation values. See agent.
         """
-
         data = self._tcpclient.recvData()
 
         if data == "ciao":
@@ -152,6 +151,7 @@ class Environment(object):
         action_str += "\r\n"
         self._tcpclient.send_data(str.encode(action_str))
 
+
     def reset(self):
         """Resets the simulator and configure it according to the variables set
         here."""
@@ -172,7 +172,6 @@ class Environment(object):
         self._tcpclient.send_data(
             str.encode("reset -maxFPS on " + argstring + self.custom_args + "\r\n")
         )
-
 
 class TCPClient(object):
     """A simple client for the marioai TCP server.
@@ -253,9 +252,11 @@ class TCPClient(object):
         Args:
           data (str): the string to be sent.
         """
+
         try:
             self.sock.send(data)
 
         except socket.error as message:
+
             logging.error(f"[TCPClient] error while sending. Message: {message}")
             raise socket.error
