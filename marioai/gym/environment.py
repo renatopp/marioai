@@ -32,7 +32,7 @@ PLAYER_POSITION = 11
 class MarioEnv(gym.Env):
     def __init__(
         self,
-        level_difficult: int = 0,
+        level_difficulty: int = 0,
         level_type: int = 0,
         creatures_enabled: bool = True,
         mario_mode: int = 2,
@@ -59,7 +59,7 @@ class MarioEnv(gym.Env):
         self.finished = False
         self.last_sense = None
 
-        self._env.level_difficulty = level_difficult
+        self._env.level_difficulty = level_difficulty
         self._env.level_type = level_type
         self._env.creatures_enabled = creatures_enabled
         self._env.init_mario_mode = mario_mode

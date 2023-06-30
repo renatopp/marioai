@@ -10,3 +10,4 @@ tqdm==4.64.0
 stable_baselines>=2.0.0
 gym>=0.26.2
 shimmy>=0.2.1
+click>=8.1.3
