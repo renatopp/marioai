@@ -109,7 +109,6 @@ class Task(object):
 
     def get_sensors(self):
         """Bridge to environment."""
-
         sense = self.env.get_sensors()
         self.state = self.build_state(sense)
         if len(sense) == self.env.fitness_values:

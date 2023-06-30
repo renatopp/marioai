@@ -61,9 +61,20 @@ class Environment(object):
         # self._tcpclient = TCPClient(name, host, port)
         # self._tcpclient.connect()
 
+    def _check_java(self):
+        try:
+            print('Checking if Java is installed...')
+            p = subprocess.Popen(['java', '-version'],
+            stdout = subprocess.PIPE,
+            stderr = subprocess.STDOUT)
+            out = list(iter(p.stdout.readline, b''))
+            print(f"Java version: {out[0].decode('ascii')}")
+        except FileNotFoundError:
+            raise EnvironmentError('Java is not installed!')
+        
     def _run_server(self, name, host, port):
         print(os.getcwd())
-
+        self._check_java()
         source_path = Path(__file__).resolve()
         source_dir = source_path.parent
         self._server_process = subprocess.Popen(
@@ -116,6 +127,7 @@ class Environment(object):
 
         else:
             logging.warning(f"[ENVIRONMENT] Unexpected received data: {data}")
+            raise EnvironmentError('Unexpected received data from server')
 
     def perform_action(self, action):
         """Takes a numpy array of ints and sends as a string to server.
@@ -259,4 +271,4 @@ class TCPClient(object):
         except socket.error as message:
 
             logging.error(f"[TCPClient] error while sending. Message: {message}")
-            raise socket.error
+            raise OSError(f"[TCPClient] error while sending. Message: {message}")
