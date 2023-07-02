@@ -79,9 +79,20 @@ def dqn_model(
     model.learn(total_timesteps=total_timesteps, log_interval=log_interval)
     env.close()
 
-
-def _run_env():
-    env = MarioEnv(level_difficulty=0, mario_mode=0, time_limit=50, max_fps=720)
+@click.command(name='random')
+@add_options(environment_options)
+def random_agent(
+    level_difficulty: int,
+    mario_mode: int,
+    time_limit: int,
+    max_fps: int,
+):
+    env = MarioEnv(
+        level_difficulty=level_difficulty, 
+        mario_mode=mario_mode, 
+        time_limit=time_limit, 
+        max_fps=max_fps
+    )
     observation = env.reset()
     for _ in range(10000):
         action = env.action_space.sample()  # User-defined policy function
@@ -93,6 +104,7 @@ def _run_env():
 
 cli.add_command(monte_carlo)
 cli.add_command(dqn_model)
+cli.add_command(random_agent)
 
 if __name__ == "__main__":
     cli()
